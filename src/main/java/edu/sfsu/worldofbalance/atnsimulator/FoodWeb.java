@@ -3,9 +3,8 @@ package edu.sfsu.worldofbalance.atnsimulator;
 import com.google.gson.Gson;
 
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FoodWeb {
 
@@ -99,6 +98,33 @@ public class FoodWeb {
         return subweb;
     }
 
+    /**
+     * Normalize node IDs to the range 0..(nodeCount-1)
+     * while preserving the food web structure.
+     * @return a map of the original node IDs to the normalized node IDs
+     */
+    public Map<Integer, Integer> normalizeNodeIds() {
+
+        // Maps old node IDs to new, normalized node IDs
+        HashMap<Integer, Integer> nodeMap = normalizedNodeIdMap();
+
+        HashMap<Integer, NodeAttributes> normalizedNodeAttributes = new HashMap<>();
+        HashMap<Integer, HashSet<Integer>> normalizedLinks = new HashMap<>();
+        for (Map.Entry<Integer, Integer> e : nodeMap.entrySet()) {
+            int oldNodeId = e.getKey();
+            int newNodeId = e.getValue();
+            normalizedNodeAttributes.put(newNodeId, nodeAttributes.get(oldNodeId));
+            normalizedLinks.put(newNodeId, mapSetValues(links.get(oldNodeId), nodeMap));
+        }
+        nodeAttributes = normalizedNodeAttributes;
+        links = normalizedLinks;
+        reverseLinks.clear();
+        initializeMissingLinks(reverseLinks);
+        populateReverseLinks();
+
+        return nodeMap;
+    }
+
     public boolean equals(Object other) {
         FoodWeb otherWeb = (FoodWeb) other;
         return otherWeb.nodeAttributes.equals(this.nodeAttributes)
@@ -136,5 +162,38 @@ public class FoodWeb {
         HashSet<Integer> intersection = new HashSet<>(s1);
         intersection.retainAll(s2);
         return intersection;
+    }
+
+    /**
+     * Map the values in the given set to a set of new values,
+     * using the given map of existing values to new values.
+     * @param values the input set
+     * @param mapping the map with existing values as keys and new values as values
+     * @return the mapped set
+     */
+    private static HashSet<Integer> mapSetValues(Set<Integer> values, Map<Integer, Integer> mapping) {
+        HashSet<Integer> mappedSet = values.stream()
+                .map(oldValue -> mapping.get(oldValue))
+                .collect(Collectors.toCollection(HashSet::new));
+        return mappedSet;
+    }
+
+    private HashMap<Integer, Integer> normalizedNodeIdMap() {
+        int[] sortedOldNodeIds = sortedNodeIds();
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int newNodeId = 0; newNodeId < nodeCount(); newNodeId++) {
+            map.put(sortedOldNodeIds[newNodeId], newNodeId);
+        }
+        return map;
+    }
+
+    private int[] sortedNodeIds() {
+        int[] sortedNodeIds = new int[nodeCount()];
+        int i = 0;
+        for (int nodeId : nodes()) {
+            sortedNodeIds[i++] = nodeId;
+        }
+        Arrays.sort(sortedNodeIds);
+        return sortedNodeIds;
     }
 }

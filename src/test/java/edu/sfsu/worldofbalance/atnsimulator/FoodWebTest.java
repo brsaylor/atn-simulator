@@ -5,7 +5,9 @@ import org.junit.Test;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -173,6 +175,40 @@ public class FoodWebTest {
         FoodWeb actualSubweb = web.subweb(subwebNodes);
 
         assertEquals(expectedSubWeb, actualSubweb);
+    }
+
+    @Test
+    public void testNormalizeNodeIds() {
+        web.addNode(100);
+        web.addNode(101);
+        web.addNode(102);
+        web.setNodeAttributes(100, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
+        web.setNodeAttributes(101, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        web.setNodeAttributes(102, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        web.addLink(100, 101);
+        web.addLink(100, 102);
+        web.addLink(101, 102);
+
+        Map<Integer, Integer> nodeMap = web.normalizeNodeIds();
+
+        Map<Integer, Integer> expectedNodeMap = new HashMap<>();
+        expectedNodeMap.put(100, 0);
+        expectedNodeMap.put(101, 1);
+        expectedNodeMap.put(102, 2);
+
+        FoodWeb expectedWeb = new FoodWeb();
+        expectedWeb.addNode(0);
+        expectedWeb.addNode(1);
+        expectedWeb.addNode(2);
+        expectedWeb.setNodeAttributes(0, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
+        expectedWeb.setNodeAttributes(1, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        expectedWeb.setNodeAttributes(2, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        expectedWeb.addLink(0, 1);
+        expectedWeb.addLink(0, 2);
+        expectedWeb.addLink(1, 2);
+
+        assertEquals(expectedNodeMap, nodeMap);
+        assertEquals(expectedWeb, web);
     }
 
     // Corresponds to small-food-web.json test file
