@@ -89,6 +89,23 @@ public class FoodWeb {
         return reverseLinks.get(predatorNodeId);
     }
 
+    public FoodWeb subweb(Set<Integer> nodeIds) {
+        FoodWeb subweb = new FoodWeb();
+        for (int nodeId : nodeIds) {
+            subweb.nodeAttributes.put(nodeId, nodeAttributes.get(nodeId));
+            subweb.links.put(nodeId, intersection(nodeIds, links.get(nodeId)));
+            subweb.reverseLinks.put(nodeId, intersection(nodeIds, reverseLinks.get(nodeId)));
+        }
+        return subweb;
+    }
+
+    public boolean equals(Object other) {
+        FoodWeb otherWeb = (FoodWeb) other;
+        return otherWeb.nodeAttributes.equals(this.nodeAttributes)
+                && otherWeb.links.equals(this.links)
+                && otherWeb.reverseLinks.equals(this.reverseLinks);
+    }
+
     /**
      * Update `linkSet` (either `links` or `reverseLinks`) so that it contains all the same keys (nodeIds)
      * as `nodeAttributes`.
@@ -110,5 +127,14 @@ public class FoodWeb {
                 reverseLinks.get(predatorNodeId).add(preyNodeId);
             }
         }
+    }
+
+    /**
+     * @return the intersection of the two given sets.
+     */
+    private static HashSet<Integer> intersection(Set<Integer> s1, HashSet<Integer> s2) {
+        HashSet<Integer> intersection = new HashSet<>(s1);
+        intersection.retainAll(s2);
+        return intersection;
     }
 }

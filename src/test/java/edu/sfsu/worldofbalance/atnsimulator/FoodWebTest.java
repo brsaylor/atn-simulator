@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class FoodWebTest {
@@ -107,10 +108,75 @@ public class FoodWebTest {
         assertEquals(
                 new NodeAttributes(NodeAttributes.NodeType.PRODUCER),
                 new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
+        assertNotEquals(
+                new NodeAttributes(NodeAttributes.NodeType.PRODUCER),
+                new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+    }
+
+    @Test
+    public void testEquals() {
+        initializeSmallFoodWeb(web);
+        FoodWeb otherWeb = new FoodWeb();
+        initializeSmallFoodWeb(otherWeb);
+        assertEquals(web, otherWeb);
+    }
+
+    @Test
+    public void testNotEqualsBecauseDifferentNodes() {
+        initializeSmallFoodWeb(web);
+        FoodWeb otherWeb = new FoodWeb();
+        initializeSmallFoodWeb(otherWeb);
+        otherWeb.addNode(4);
+        assertNotEquals(web, otherWeb);
+    }
+
+    @Test
+    public void testNotEqualsBecauseDifferentLinks() {
+        initializeSmallFoodWeb(web);
+        FoodWeb otherWeb = new FoodWeb();
+        initializeSmallFoodWeb(otherWeb);
+        otherWeb.addLink(2, 1);
+        assertNotEquals(web, otherWeb);
+    }
+
+    @Test
+    public void testNotEqualsBecauseDifferentAttributes() {
+        initializeSmallFoodWeb(web);
+        FoodWeb otherWeb = new FoodWeb();
+        initializeSmallFoodWeb(otherWeb);
+        otherWeb.setNodeAttributes(1, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        assertNotEquals(web, otherWeb);
     }
 
     @Test
     public void testCreateFromJson() {
+        initializeSmallFoodWeb(web);
+        Reader reader = new InputStreamReader(web.getClass().getResourceAsStream("/small-food-web.json"));
+        FoodWeb jsonWeb = FoodWeb.createFromJson(reader);
+        assertEquals(web, jsonWeb);
+    }
+
+    @Test
+    public void testSubweb() {
+        initializeSmallFoodWeb(web);
+
+        FoodWeb expectedSubWeb = new FoodWeb();
+        expectedSubWeb.addNode(1);
+        expectedSubWeb.addNode(2);
+        expectedSubWeb.setNodeAttributes(1, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
+        expectedSubWeb.setNodeAttributes(2, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        expectedSubWeb.addLink(1, 2);
+
+        Set<Integer> subwebNodes = new HashSet<>();
+        subwebNodes.add(1);
+        subwebNodes.add(2);
+        FoodWeb actualSubweb = web.subweb(subwebNodes);
+
+        assertEquals(expectedSubWeb, actualSubweb);
+    }
+
+    // Corresponds to small-food-web.json test file
+    private void initializeSmallFoodWeb(FoodWeb web) {
         web.addNode(1);
         web.addNode(2);
         web.addNode(3);
@@ -120,15 +186,5 @@ public class FoodWebTest {
         web.addLink(1, 2);
         web.addLink(1, 3);
         web.addLink(2, 3);
-
-        Reader reader = new InputStreamReader(web.getClass().getResourceAsStream("/small-food-web.json"));
-        FoodWeb jsonWeb = FoodWeb.createFromJson(reader);
-
-        assertEquals(web.nodes(), jsonWeb.nodes());
-        for (int nodeId = 1; nodeId <= 3; nodeId++) {
-            assertEquals(web.getPredatorsOf(nodeId), jsonWeb.getPredatorsOf(nodeId));
-            assertEquals(web.getPreyOf(nodeId), jsonWeb.getPreyOf(nodeId));
-            assertEquals(web.getNodeAttributes(nodeId), jsonWeb.getNodeAttributes(nodeId));
-        }
     }
 }
