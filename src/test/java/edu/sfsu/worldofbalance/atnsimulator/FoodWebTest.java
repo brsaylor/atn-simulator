@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -209,6 +210,21 @@ public class FoodWebTest {
 
         assertEquals(expectedNodeMap, nodeMap);
         assertEquals(expectedWeb, web);
+    }
+
+    @Test
+    public void testNodeIdsAreNormalized() {
+        web.addNode(100);
+        web.addNode(200);
+        web.normalizeNodeIds();
+        assertTrue(web.nodeIdsAreNormalized());
+    }
+
+    @Test
+    public void testNodeIdsAreNotNormalized() {
+        web.addNode(100);
+        web.addNode(200);
+        assertFalse(web.nodeIdsAreNormalized());
     }
 
     // Corresponds to small-food-web.json test file

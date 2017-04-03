@@ -125,6 +125,10 @@ public class FoodWeb {
         return nodeMap;
     }
 
+    public boolean nodeIdsAreNormalized() {
+        return Collections.min(nodes()) == 0 && Collections.max(nodes()) == nodeCount() - 1;
+    }
+
     public boolean equals(Object other) {
         FoodWeb otherWeb = (FoodWeb) other;
         return otherWeb.nodeAttributes.equals(this.nodeAttributes)
