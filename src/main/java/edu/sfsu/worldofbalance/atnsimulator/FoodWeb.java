@@ -1,12 +1,12 @@
 package edu.sfsu.worldofbalance.atnsimulator;
 
+import com.google.gson.Gson;
+
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by ben on 4/2/17.
- */
 public class FoodWeb {
 
     private HashMap<Integer, HashSet<Integer>> links;
@@ -19,8 +19,21 @@ public class FoodWeb {
         nodeAttributes = new HashMap<>();
     }
 
+    public static FoodWeb createFromJson(Reader reader) {
+        Gson gson = new Gson();
+        FoodWeb web = gson.fromJson(reader, FoodWeb.class);
+        web.initializeMissingLinks(web.links);
+        web.initializeMissingLinks(web.reverseLinks);
+        web.populateReverseLinks();
+        return web;
+    }
+
     public int nodeCount() {
         return nodeAttributes.size();
+    }
+
+    public Set<Integer> nodes() {
+        return nodeAttributes.keySet();
     }
 
     public void addNode(int nodeId) {
@@ -74,5 +87,28 @@ public class FoodWeb {
             throw new FoodWebNodeAbsentException(predatorNodeId);
         }
         return reverseLinks.get(predatorNodeId);
+    }
+
+    /**
+     * Update `linkSet` (either `links` or `reverseLinks`) so that it contains all the same keys (nodeIds)
+     * as `nodeAttributes`.
+     */
+    private void initializeMissingLinks(HashMap<Integer, HashSet<Integer>> linkSet) {
+        for (int nodeId : nodeAttributes.keySet()) {
+            if (!linkSet.containsKey(nodeId)) {
+                linkSet.put(nodeId, new HashSet<>());
+            }
+        }
+    }
+
+    /**
+     * Populate `reverseLinks` based on `links`.
+     */
+    private void populateReverseLinks() {
+        for (int preyNodeId : links.keySet()) {
+            for (int predatorNodeId : links.get(preyNodeId)) {
+                reverseLinks.get(predatorNodeId).add(preyNodeId);
+            }
+        }
     }
 }

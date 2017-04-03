@@ -3,6 +3,8 @@ package edu.sfsu.worldofbalance.atnsimulator;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -86,5 +88,47 @@ public class FoodWebTest {
         expectedPredators.add(2);
         expectedPredators.add(3);
         assertEquals(expectedPredators, web.getPredatorsOf(1));
+    }
+
+    @Test
+    public void testNodes() {
+        web.addNode(1);
+        web.addNode(2);
+        web.addNode(3);
+        Set<Integer> expectedNodes = new HashSet<>();
+        expectedNodes.add(1);
+        expectedNodes.add(2);
+        expectedNodes.add(3);
+        assertEquals(expectedNodes, web.nodes());
+    }
+
+    @Test
+    public void testNodeAttributesEquals() {
+        assertEquals(
+                new NodeAttributes(NodeAttributes.NodeType.PRODUCER),
+                new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
+    }
+
+    @Test
+    public void testCreateFromJson() {
+        web.addNode(1);
+        web.addNode(2);
+        web.addNode(3);
+        web.setNodeAttributes(1, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
+        web.setNodeAttributes(2, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        web.setNodeAttributes(3, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        web.addLink(1, 2);
+        web.addLink(1, 3);
+        web.addLink(2, 3);
+
+        Reader reader = new InputStreamReader(web.getClass().getResourceAsStream("/small-food-web.json"));
+        FoodWeb jsonWeb = FoodWeb.createFromJson(reader);
+
+        assertEquals(web.nodes(), jsonWeb.nodes());
+        for (int nodeId = 1; nodeId <= 3; nodeId++) {
+            assertEquals(web.getPredatorsOf(nodeId), jsonWeb.getPredatorsOf(nodeId));
+            assertEquals(web.getPreyOf(nodeId), jsonWeb.getPreyOf(nodeId));
+            assertEquals(web.getNodeAttributes(nodeId), jsonWeb.getNodeAttributes(nodeId));
+        }
     }
 }

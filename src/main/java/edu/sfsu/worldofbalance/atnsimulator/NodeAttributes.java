@@ -7,4 +7,17 @@ public class NodeAttributes {
     }
 
     public NodeType nodeType;
+
+    public NodeAttributes() {
+        this.nodeType = NodeType.CONSUMER;
+    }
+
+    public NodeAttributes(NodeType nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return ((NodeAttributes) other).nodeType == this.nodeType;
+    }
 }

@@ -1,0 +1,17 @@
+{
+    "nodeAttributes": {
+        "1": {
+            "nodeType": "PRODUCER"
+        },
+        "2": {
+            "nodeType": "CONSUMER"
+        },
+        "3": {
+            "nodeType": "CONSUMER"
+        }
+    },
+    "links": {
+        "1": [2, 3],
+        "2": [3]
+    }
+}
