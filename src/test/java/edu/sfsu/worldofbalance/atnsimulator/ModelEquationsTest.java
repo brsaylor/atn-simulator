@@ -22,20 +22,22 @@ public class ModelEquationsTest {
     public void testFoodWebNotNormalized() {
         web.addNode(1);
         ModelParameters parameters = new ModelParameters(1);
-        new ModelEquations(web, parameters);
+        new ModelEquations(web);
     }
 
     @Test(expected = IncorrectParameterDimensionsException.class)
     public void testIncorrectParameterDimensions() {
         web.addNode(0);
+        web.setNodeAttributes(0, new NodeAttributes(PRODUCER));
         ModelParameters parameters = new ModelParameters(2);
-        new ModelEquations(web, parameters);
+        ModelEquations equations = new ModelEquations(web);
+        equations.setParameters(parameters);
     }
 
     @Test(expected = EmptyFoodWebException.class)
     public void testEmpty() {
         ModelParameters parameters = new ModelParameters(0);
-        new ModelEquations(web, parameters);
+        new ModelEquations(web);
     }
 
     @Test
@@ -47,7 +49,8 @@ public class ModelEquationsTest {
         web.addLink(0, 1);
         ModelParameters parameters = new ModelParameters(web.nodeCount());
         setDenominatorParametersToOne(parameters);
-        ModelEquations equations = new ModelEquations(web, parameters);
+        ModelEquations equations = new ModelEquations(web);
+        equations.setParameters(parameters);
         double[] BDot = new double[web.nodeCount()];
         equations.computeDerivatives(0, new double[web.nodeCount()], BDot);
         double[] expectedBDot = new double[web.nodeCount()];
