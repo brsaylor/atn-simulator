@@ -36,4 +36,23 @@ public class ModelParameters {
         halfSaturationDensity = new double[N][N];
         assimilationEfficiency = new double[N][N];
     }
+
+    public static class Defaults {
+        public static boolean useSystemCarryingCapacity = false;
+        public static double systemCarryingCapacity = 1;
+
+        public static double metabolicRate = 0.5;
+        public static double growthRate = 1;
+        public static double carryingCapacity = 1;
+
+        public static double maximumIngestionRate = 6;
+        public static double predatorInterference = 0;
+        public static double functionalResponseControl = 0.2;
+        public static double relativeHalfSaturationDensity = 1;
+        public static double halfSaturationDensity = 0.5;
+
+        // Default assimilation efficiency depends on whether prey node is a plant or animal
+        public static double assimilationEfficiencyPlant = 0.5;
+        public static double assimilationEfficiencyAnimal = 0.8;
+    }
 }
