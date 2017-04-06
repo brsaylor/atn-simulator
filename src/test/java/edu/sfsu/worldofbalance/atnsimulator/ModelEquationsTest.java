@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 // TODO: More comprehensive tests
 // - most testing done by comparing simulation output with implementation in wob-server
@@ -55,6 +56,10 @@ public class ModelEquationsTest {
         web.addProducerNode(0);
         ModelParameters parameters = new ModelParameters(web);
         ModelEquations equations = new ModelEquations(web, parameters);
+        double[] Bt = new double[] {0.5};
+        double[] BDot = new double[1];
+        equations.computeDerivatives(0, Bt, BDot);
+        assertTrue(BDot[0] > 0);
     }
 
     private void setDenominatorParametersToOne(ModelParameters parameters) {
