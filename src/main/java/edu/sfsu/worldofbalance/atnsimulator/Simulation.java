@@ -16,6 +16,7 @@ import java.util.Arrays;
 public class Simulation implements Runnable {
 
     private int nodeCount;
+    private SimulationParameters simulationParameters;
     private int timesteps;
     private double stepSize;
     private boolean stopOnSteadyState;
@@ -31,6 +32,7 @@ public class Simulation implements Runnable {
         if (equations.getDimension() != initialBiomass.length)
             throw new IncorrectParameterDimensionsException();
         this.nodeCount = initialBiomass.length;
+        this.simulationParameters = simulationParameters;
         this.timesteps = simulationParameters.timesteps;
         this.stepSize = simulationParameters.stepSize;
         this.stopOnSteadyState = simulationParameters.stopOnSteadyState;
@@ -39,7 +41,7 @@ public class Simulation implements Runnable {
     }
 
     public void run() {
-        results = new SimulationResults(timesteps, initialBiomass.length);
+        initializeResultsObject();
         initializeIntegrator();
         if (stopOnSteadyState) {
             addConstantSteadyStateDetector();
@@ -50,6 +52,13 @@ public class Simulation implements Runnable {
 
     public SimulationResults getResults() {
         return results;
+    }
+
+    private void initializeResultsObject() {
+        results = new SimulationResults(timesteps, initialBiomass.length);
+        results.simulationParameters = simulationParameters;
+        results.modelParameters = equations.getParameters();
+        results.stopEvent = SimulationEventHandler.EventType.NONE;
     }
 
     private void initializeIntegrator() {

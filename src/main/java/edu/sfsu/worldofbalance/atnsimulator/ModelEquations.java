@@ -68,6 +68,10 @@ public class ModelEquations implements FirstOrderDifferentialEquations {
         this.p = parameters;
     }
 
+    public ModelParameters getParameters() {
+        return p;
+    }
+
     @Override
     public int getDimension() {
         return nodeCount;
