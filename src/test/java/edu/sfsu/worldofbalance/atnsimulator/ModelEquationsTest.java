@@ -3,8 +3,6 @@ package edu.sfsu.worldofbalance.atnsimulator;
 import org.junit.Before;
 import org.junit.Test;
 
-import static edu.sfsu.worldofbalance.atnsimulator.NodeAttributes.NodeType.CONSUMER;
-import static edu.sfsu.worldofbalance.atnsimulator.NodeAttributes.NodeType.PRODUCER;
 import static org.junit.Assert.assertArrayEquals;
 
 // TODO: More comprehensive tests
@@ -22,21 +20,20 @@ public class ModelEquationsTest {
     public void testFoodWebNotNormalized() {
         web.addProducerNode(1);
         ModelParameters parameters = new ModelParameters(1);
-        new ModelEquations(web);
+        new ModelEquations(web, parameters);
     }
 
     @Test(expected = IncorrectParameterDimensionsException.class)
     public void testIncorrectParameterDimensions() {
         web.addProducerNode(0);
         ModelParameters parameters = new ModelParameters(2);
-        ModelEquations equations = new ModelEquations(web);
-        equations.setParameters(parameters);
+        ModelEquations equations = new ModelEquations(web, parameters);
     }
 
     @Test(expected = EmptyFoodWebException.class)
     public void testEmpty() {
         ModelParameters parameters = new ModelParameters(0);
-        new ModelEquations(web);
+        new ModelEquations(web, parameters);
     }
 
     @Test
@@ -46,12 +43,18 @@ public class ModelEquationsTest {
         web.addLink(0, 1);
         ModelParameters parameters = new ModelParameters(web.nodeCount());
         setDenominatorParametersToOne(parameters);
-        ModelEquations equations = new ModelEquations(web);
-        equations.setParameters(parameters);
+        ModelEquations equations = new ModelEquations(web, parameters);
         double[] BDot = new double[web.nodeCount()];
         equations.computeDerivatives(0, new double[web.nodeCount()], BDot);
         double[] expectedBDot = new double[web.nodeCount()];
         assertArrayEquals(expectedBDot, BDot, 1e-20);
+    }
+
+    @Test
+    public void testSingleProducer() {
+        web.addProducerNode(0);
+        ModelParameters parameters = new ModelParameters(web);
+        ModelEquations equations = new ModelEquations(web, parameters);
     }
 
     private void setDenominatorParametersToOne(ModelParameters parameters) {

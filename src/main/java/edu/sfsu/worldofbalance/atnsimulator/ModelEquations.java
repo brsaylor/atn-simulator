@@ -36,13 +36,15 @@ public class ModelEquations implements FirstOrderDifferentialEquations {
 
     private double[] currentDerivatives;    // Most recently computed derivatives for use by event handlers
 
-    public ModelEquations(FoodWeb foodWeb) {
+    public ModelEquations(FoodWeb foodWeb, ModelParameters parameters) {
         nodeCount = foodWeb.nodeCount();
 
         if (nodeCount == 0)
             throw new EmptyFoodWebException();
         if (!foodWeb.nodeIdsAreNormalized())
             throw new FoodWebNotNormalizedException();
+
+        setParameters(parameters);
 
         this.foodWeb = foodWeb;
         producers = getNodeIdsOfType(NodeAttributes.NodeType.PRODUCER);
@@ -60,10 +62,6 @@ public class ModelEquations implements FirstOrderDifferentialEquations {
         functionalResponse = new double[nodeCount][nodeCount];
     }
 
-    /**
-     * Set the parameters of the model.
-     * Must be called before computeDerivatives.
-     */
     public void setParameters(ModelParameters parameters) {
         if (!parametersHaveCorrectDimensions(parameters))
             throw new IncorrectParameterDimensionsException();
@@ -101,6 +99,14 @@ public class ModelEquations implements FirstOrderDifferentialEquations {
 
     public double[] getCurrentDerivatives() {
         return currentDerivatives;
+    }
+
+    public int[] getProducers() {
+        return producers;
+    }
+
+    public int[] getConsumers() {
+        return consumers;
     }
 
     private void computeFunctionalResponse() {
