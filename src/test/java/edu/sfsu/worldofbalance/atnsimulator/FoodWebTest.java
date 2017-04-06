@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -157,6 +158,14 @@ public class FoodWebTest {
         Reader reader = new InputStreamReader(web.getClass().getResourceAsStream("/small-food-web.json"));
         FoodWeb jsonWeb = FoodWeb.createFromJson(reader);
         assertEquals(web, jsonWeb);
+    }
+
+    @Test
+    public void testToJson() {
+        initializeSmallFoodWeb(web);
+        String json = web.toJson();
+        FoodWeb webFromJson = FoodWeb.createFromJson(new StringReader(json));
+        assertEquals(web, webFromJson);
     }
 
     @Test

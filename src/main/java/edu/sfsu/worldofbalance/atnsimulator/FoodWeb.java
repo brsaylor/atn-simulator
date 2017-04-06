@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class FoodWeb {
 
     private HashMap<Integer, HashSet<Integer>> links;
-    private HashMap<Integer, HashSet<Integer>> reverseLinks;
+    private transient HashMap<Integer, HashSet<Integer>> reverseLinks;
     private HashMap<Integer, NodeAttributes> nodeAttributes;
 
     public FoodWeb() {
@@ -25,6 +25,10 @@ public class FoodWeb {
         web.initializeMissingLinks(web.reverseLinks);
         web.populateReverseLinks();
         return web;
+    }
+
+    public String toJson() {
+        return (new Gson()).toJson(this);
     }
 
     public int nodeCount() {
