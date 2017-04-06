@@ -20,15 +20,14 @@ public class ModelEquationsTest {
 
     @Test(expected = FoodWebNotNormalizedException.class)
     public void testFoodWebNotNormalized() {
-        web.addNode(1);
+        web.addProducerNode(1);
         ModelParameters parameters = new ModelParameters(1);
         new ModelEquations(web);
     }
 
     @Test(expected = IncorrectParameterDimensionsException.class)
     public void testIncorrectParameterDimensions() {
-        web.addNode(0);
-        web.setNodeAttributes(0, new NodeAttributes(PRODUCER));
+        web.addProducerNode(0);
         ModelParameters parameters = new ModelParameters(2);
         ModelEquations equations = new ModelEquations(web);
         equations.setParameters(parameters);
@@ -42,10 +41,8 @@ public class ModelEquationsTest {
 
     @Test
     public void testComputeDerivativesZero() {
-        web.addNode(0);
-        web.addNode(1);
-        web.setNodeAttributes(0, new NodeAttributes(PRODUCER));
-        web.setNodeAttributes(1, new NodeAttributes(CONSUMER));
+        web.addProducerNode(0);
+        web.addConsumerNode(1);
         web.addLink(0, 1);
         ModelParameters parameters = new ModelParameters(web.nodeCount());
         setDenominatorParametersToOne(parameters);

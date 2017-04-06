@@ -35,13 +35,21 @@ public class FoodWeb {
         return nodeAttributes.keySet();
     }
 
-    public void addNode(int nodeId) {
+    public void addNode(int nodeId, NodeAttributes attributes) {
         if (containsNode(nodeId)) {
             throw new FoodWebDuplicateNodeException(nodeId);
         }
         links.put(nodeId, new HashSet<>());
         reverseLinks.put(nodeId, new HashSet<>());
-        nodeAttributes.put(nodeId, null);
+        nodeAttributes.put(nodeId, attributes);
+    }
+
+    public void addProducerNode(int nodeId) {
+        addNode(nodeId, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
+    }
+
+    public void addConsumerNode(int nodeId) {
+        addNode(nodeId, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
     }
 
     public void addLink(int preyNodeId, int predatorNodeId) {

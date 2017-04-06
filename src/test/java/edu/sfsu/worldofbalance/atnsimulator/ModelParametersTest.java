@@ -27,12 +27,9 @@ public class ModelParametersTest {
     @Test
     public void testFoodWebConstructor() {
         FoodWeb web = new FoodWeb();
-        web.addNode(0);
-        web.setNodeAttributes(0, new NodeAttributes(PRODUCER));
-        web.addNode(1);
-        web.setNodeAttributes(1, new NodeAttributes(CONSUMER));
-        web.addNode(2);
-        web.setNodeAttributes(2, new NodeAttributes(CONSUMER));
+        web.addProducerNode(0);
+        web.addConsumerNode(1);
+        web.addConsumerNode(2);
 
         ModelParameters parameters = new ModelParameters(web);
 

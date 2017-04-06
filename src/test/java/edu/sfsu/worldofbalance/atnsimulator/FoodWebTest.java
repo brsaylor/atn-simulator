@@ -31,9 +31,9 @@ public class FoodWebTest {
 
     @Test
     public void testNodeCount() {
-        web.addNode(1);
-        web.addNode(2);
-        web.addNode(3);
+        web.addProducerNode(1);
+        web.addConsumerNode(2);
+        web.addConsumerNode(3);
         assertEquals(3, web.nodeCount());
     }
 
@@ -44,8 +44,8 @@ public class FoodWebTest {
 
     @Test
     public void testAddLink() {
-        web.addNode(1);
-        web.addNode(2);
+        web.addProducerNode(1);
+        web.addConsumerNode(2);
         web.addLink(1, 2);
         assertEquals(2, web.nodeCount());
         assertTrue(web.containsNode(1));
@@ -57,22 +57,22 @@ public class FoodWebTest {
     public void testNodeAttributes() {
         NodeAttributes attributes = new NodeAttributes();
         attributes.nodeType = NodeAttributes.NodeType.PRODUCER;
-        web.addNode(1);
+        web.addNode(1, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
         web.setNodeAttributes(1, attributes);
         assertEquals(attributes.nodeType, web.getNodeAttributes(1).nodeType);
     }
 
     @Test(expected = FoodWebDuplicateNodeException.class)
     public void testDoubleAddNode() {
-        web.addNode(1);
-        web.addNode(1);
+        web.addProducerNode(1);
+        web.addProducerNode(1);
     }
 
     @Test
     public void testGetPreyOf() {
-        web.addNode(1);
-        web.addNode(2);
-        web.addNode(3);
+        web.addProducerNode(1);
+        web.addConsumerNode(2);
+        web.addConsumerNode(3);
         web.addLink(1, 3);
         web.addLink(2, 3);
         Set<Integer> expectedPrey = new HashSet<>();
@@ -83,9 +83,9 @@ public class FoodWebTest {
 
     @Test
     public void testGetPredatorsOf() {
-        web.addNode(1);
-        web.addNode(2);
-        web.addNode(3);
+        web.addProducerNode(1);
+        web.addConsumerNode(2);
+        web.addConsumerNode(3);
         web.addLink(1, 2);
         web.addLink(1, 3);
         Set<Integer> expectedPredators = new HashSet<>();
@@ -96,9 +96,9 @@ public class FoodWebTest {
 
     @Test
     public void testNodes() {
-        web.addNode(1);
-        web.addNode(2);
-        web.addNode(3);
+        web.addProducerNode(1);
+        web.addConsumerNode(2);
+        web.addConsumerNode(3);
         Set<Integer> expectedNodes = new HashSet<>();
         expectedNodes.add(1);
         expectedNodes.add(2);
@@ -129,7 +129,7 @@ public class FoodWebTest {
         initializeSmallFoodWeb(web);
         FoodWeb otherWeb = new FoodWeb();
         initializeSmallFoodWeb(otherWeb);
-        otherWeb.addNode(4);
+        otherWeb.addConsumerNode(4);
         assertNotEquals(web, otherWeb);
     }
 
@@ -164,10 +164,8 @@ public class FoodWebTest {
         initializeSmallFoodWeb(web);
 
         FoodWeb expectedSubWeb = new FoodWeb();
-        expectedSubWeb.addNode(1);
-        expectedSubWeb.addNode(2);
-        expectedSubWeb.setNodeAttributes(1, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
-        expectedSubWeb.setNodeAttributes(2, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        expectedSubWeb.addProducerNode(1);
+        expectedSubWeb.addConsumerNode(2);
         expectedSubWeb.addLink(1, 2);
 
         Set<Integer> subwebNodes = new HashSet<>();
@@ -180,12 +178,9 @@ public class FoodWebTest {
 
     @Test
     public void testNormalizeNodeIds() {
-        web.addNode(100);
-        web.addNode(101);
-        web.addNode(102);
-        web.setNodeAttributes(100, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
-        web.setNodeAttributes(101, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
-        web.setNodeAttributes(102, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        web.addProducerNode(100);
+        web.addConsumerNode(101);
+        web.addConsumerNode(102);
         web.addLink(100, 101);
         web.addLink(100, 102);
         web.addLink(101, 102);
@@ -198,12 +193,9 @@ public class FoodWebTest {
         expectedNodeMap.put(102, 2);
 
         FoodWeb expectedWeb = new FoodWeb();
-        expectedWeb.addNode(0);
-        expectedWeb.addNode(1);
-        expectedWeb.addNode(2);
-        expectedWeb.setNodeAttributes(0, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
-        expectedWeb.setNodeAttributes(1, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
-        expectedWeb.setNodeAttributes(2, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        expectedWeb.addProducerNode(0);
+        expectedWeb.addConsumerNode(1);
+        expectedWeb.addConsumerNode(2);
         expectedWeb.addLink(0, 1);
         expectedWeb.addLink(0, 2);
         expectedWeb.addLink(1, 2);
@@ -214,27 +206,24 @@ public class FoodWebTest {
 
     @Test
     public void testNodeIdsAreNormalized() {
-        web.addNode(100);
-        web.addNode(200);
+        web.addProducerNode(100);
+        web.addConsumerNode(200);
         web.normalizeNodeIds();
         assertTrue(web.nodeIdsAreNormalized());
     }
 
     @Test
     public void testNodeIdsAreNotNormalized() {
-        web.addNode(100);
-        web.addNode(200);
+        web.addProducerNode(100);
+        web.addConsumerNode(200);
         assertFalse(web.nodeIdsAreNormalized());
     }
 
     // Corresponds to small-food-web.json test file
     private void initializeSmallFoodWeb(FoodWeb web) {
-        web.addNode(1);
-        web.addNode(2);
-        web.addNode(3);
-        web.setNodeAttributes(1, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
-        web.setNodeAttributes(2, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
-        web.setNodeAttributes(3, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
+        web.addProducerNode(1);
+        web.addConsumerNode(2);
+        web.addConsumerNode(3);
         web.addLink(1, 2);
         web.addLink(1, 3);
         web.addLink(2, 3);
