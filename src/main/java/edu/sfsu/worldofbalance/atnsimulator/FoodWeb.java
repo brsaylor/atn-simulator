@@ -124,30 +124,34 @@ public class FoodWeb {
     }
 
     /**
-     * Normalize node IDs to the range 0..(nodeCount-1)
-     * while preserving the food web structure.
-     * @return a map of the original node IDs to the normalized node IDs
+     * Return a new FoodWeb with the same structure and attributes as this one,
+     * but with node IDs normalized to the range 0..(nodeCount-1).
+     * The `nodeIds` argument defines the mapping between existing node IDs and new node IDs;
+     * i.e., the values are the existing node IDs, and the indices are the corresponding new node IDs.
+     *
+     * @param nodeIds an array of all existing node IDs in this food web
+     * @return a normalized copy of this food web
      */
-    public Map<Integer, Integer> normalizeNodeIds() {
+    public FoodWeb normalizedCopy(int[] nodeIds) {
+        if (nodeIds.length != nodeCount())
+            throw new IllegalArgumentException("Wrong number of node IDs");
 
         // Maps old node IDs to new, normalized node IDs
-        HashMap<Integer, Integer> nodeMap = normalizedNodeIdMap();
+        HashMap<Integer, Integer> nodeMap = normalizedNodeIdMap(nodeIds);
 
-        HashMap<Integer, NodeAttributes> normalizedNodeAttributes = new HashMap<>();
-        HashMap<Integer, HashSet<Integer>> normalizedLinks = new HashMap<>();
+        FoodWeb newWeb = new FoodWeb();
         for (Map.Entry<Integer, Integer> e : nodeMap.entrySet()) {
             int oldNodeId = e.getKey();
             int newNodeId = e.getValue();
-            normalizedNodeAttributes.put(newNodeId, nodeAttributes.get(oldNodeId));
-            normalizedLinks.put(newNodeId, mapSetValues(links.get(oldNodeId), nodeMap));
+            if (!containsNode(oldNodeId))
+                throw new FoodWebNodeAbsentException(oldNodeId);
+            newWeb.addNode(newNodeId, new NodeAttributes(nodeAttributes.get(oldNodeId)));
+            newWeb.links.put(newNodeId, mapSetValues(links.get(oldNodeId), nodeMap));
         }
-        nodeAttributes = normalizedNodeAttributes;
-        links = normalizedLinks;
-        reverseLinks.clear();
-        initializeMissingLinks(reverseLinks);
-        populateReverseLinks();
+        newWeb.initializeMissingLinks(newWeb.reverseLinks);
+        newWeb.populateReverseLinks();
 
-        return nodeMap;
+        return newWeb;
     }
 
     public boolean nodeIdsAreNormalized() {
@@ -207,11 +211,11 @@ public class FoodWeb {
         return mappedSet;
     }
 
-    private HashMap<Integer, Integer> normalizedNodeIdMap() {
-        int[] sortedOldNodeIds = sortedNodeIds();
+    private HashMap<Integer, Integer> normalizedNodeIdMap(int[] nodeIds) {
         HashMap<Integer, Integer> map = new HashMap<>();
-        for (int newNodeId = 0; newNodeId < nodeCount(); newNodeId++) {
-            map.put(sortedOldNodeIds[newNodeId], newNodeId);
+        for (int newNodeId = 0; newNodeId < nodeIds.length; newNodeId++) {
+            int oldNodeId = nodeIds[newNodeId];
+            map.put(oldNodeId, newNodeId);
         }
         return map;
     }

@@ -201,20 +201,13 @@ public class FoodWebTest {
     }
 
     @Test
-    public void testNormalizeNodeIds() {
+    public void testNormalizedCopy() {
         web.addProducerNode(100);
         web.addConsumerNode(101);
         web.addConsumerNode(102);
         web.addLink(100, 101);
         web.addLink(100, 102);
         web.addLink(101, 102);
-
-        Map<Integer, Integer> nodeMap = web.normalizeNodeIds();
-
-        Map<Integer, Integer> expectedNodeMap = new HashMap<>();
-        expectedNodeMap.put(100, 0);
-        expectedNodeMap.put(101, 1);
-        expectedNodeMap.put(102, 2);
 
         FoodWeb expectedWeb = new FoodWeb();
         expectedWeb.addProducerNode(0);
@@ -224,15 +217,30 @@ public class FoodWebTest {
         expectedWeb.addLink(0, 2);
         expectedWeb.addLink(1, 2);
 
-        assertEquals(expectedNodeMap, nodeMap);
-        assertEquals(expectedWeb, web);
+        int[] nodeIds = new int[] {100, 101, 102};
+        FoodWeb actualWeb = web.normalizedCopy(nodeIds);
+
+        assertEquals(expectedWeb, actualWeb);
+    }
+
+    @Test(expected = FoodWebNodeAbsentException.class)
+    public void testNormalizedCopyGivenNonExistentNodes() {
+        web.addProducerNode(1);
+        web.addProducerNode(2);
+        web.normalizedCopy(new int[] {1, 3});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNormalizedCopyGivenWrongNumberOfNodes() {
+        web.addProducerNode(1);
+        web.addProducerNode(2);
+        web.normalizedCopy(new int[] {1, 2, 3});
     }
 
     @Test
     public void testNodeIdsAreNormalized() {
-        web.addProducerNode(100);
-        web.addConsumerNode(200);
-        web.normalizeNodeIds();
+        web.addProducerNode(0);
+        web.addConsumerNode(1);
         assertTrue(web.nodeIdsAreNormalized());
     }
 

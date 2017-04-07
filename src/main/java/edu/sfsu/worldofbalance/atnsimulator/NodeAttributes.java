@@ -12,6 +12,13 @@ public class NodeAttributes {
         this.nodeType = NodeType.CONSUMER;
     }
 
+    /**
+     * Copy constructor
+     */
+    public NodeAttributes(NodeAttributes original) {
+        this.nodeType = original.nodeType;
+    }
+
     public NodeAttributes(NodeType nodeType) {
         this.nodeType = nodeType;
     }
