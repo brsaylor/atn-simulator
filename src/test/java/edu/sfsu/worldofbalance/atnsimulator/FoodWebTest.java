@@ -6,15 +6,11 @@ import org.junit.Test;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class FoodWebTest {
 
@@ -261,6 +257,19 @@ public class FoodWebTest {
         web.addProducerNode(100);
         web.addConsumerNode(200);
         assertFalse(web.nodeIdsAreNormalized());
+    }
+
+    @Test
+    public void testSerengeti() {
+        Reader reader = new InputStreamReader(getClass().getResourceAsStream("/foodwebs/serengeti.json"));
+        FoodWeb serengeti = FoodWeb.createFromJson(reader);
+        assertEquals(87, serengeti.nodeCount());
+        assertEquals(538, serengeti.linkCount());
+
+        // Spot check links and node types
+        assertTrue(serengeti.containsLink(59, 49));
+        assertEquals(NodeAttributes.NodeType.PRODUCER, serengeti.getNodeAttributes(2).nodeType);
+        assertEquals(NodeAttributes.NodeType.CONSUMER, serengeti.getNodeAttributes(95).nodeType);
     }
 
     // Corresponds to small-food-web.json test file
