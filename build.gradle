@@ -7,6 +7,16 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+
+    // Fake Ivy repository for jars not available in any standard repositories
+    // (i.e. JHDF5)
+    ivy {
+        url "https://brsaylor.github.io/jars"
+        layout 'pattern' , {
+            ivy '[module]-ivy.xml'
+            artifact '[module]-[revision](.[ext])'
+        }
+    }
 }
 
 dependencies {
@@ -16,7 +26,12 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     compile group: 'com.beust', name: 'jcommander', version: '1.64'
 
-    // JHDF5 library version 14.12.6
-    // Download from https://wiki-bsse.ethz.ch/display/JHDF5/Download+Page
-    compile files('libs/sis-jhdf5-batteries_included.jar')
+    compile group: 'ch.systemsx.cisd', name: 'sis-jhdf5-batteries_included', version: '14.12.6'
+    // If you any trouble with Gradle not downloading this dependency automatically,
+    // download the zip file from https://wiki-bsse.ethz.ch/display/JHDF5/Download+Page
+    // find within it the jar file named below,
+    // place it in a directory called libs,
+    // and uncomment the following line.
+    // compile files('libs/sis-jhdf5-batteries_included.jar')
+
 }
