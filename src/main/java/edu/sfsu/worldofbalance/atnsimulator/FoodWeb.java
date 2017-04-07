@@ -100,6 +100,12 @@ public class FoodWeb {
         return reverseLinks.get(predatorNodeId);
     }
 
+    /**
+     * Return a subgraph of this food web ("subweb")
+     * which includes all of the given nodes and the links between them.
+     * @param nodeIds the node IDs to include in the subweb
+     * @return the generated subweb
+     */
     public FoodWeb subweb(Set<Integer> nodeIds) {
         FoodWeb subweb = new FoodWeb();
         for (int nodeId : nodeIds) {
@@ -108,6 +114,13 @@ public class FoodWeb {
             subweb.reverseLinks.put(nodeId, intersection(nodeIds, reverseLinks.get(nodeId)));
         }
         return subweb;
+    }
+
+    public FoodWeb subweb(int[] nodeIds) {
+        Set<Integer> nodeIdSet = new HashSet<>();
+        for (int nodeId : nodeIds)
+            nodeIdSet.add(nodeId);
+        return subweb(nodeIdSet);
     }
 
     /**

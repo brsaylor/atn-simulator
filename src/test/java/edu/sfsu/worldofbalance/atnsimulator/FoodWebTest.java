@@ -169,7 +169,7 @@ public class FoodWebTest {
     }
 
     @Test
-    public void testSubweb() {
+    public void testSubwebSet() {
         initializeSmallFoodWeb(web);
 
         FoodWeb expectedSubWeb = new FoodWeb();
@@ -180,6 +180,21 @@ public class FoodWebTest {
         Set<Integer> subwebNodes = new HashSet<>();
         subwebNodes.add(1);
         subwebNodes.add(2);
+        FoodWeb actualSubweb = web.subweb(subwebNodes);
+
+        assertEquals(expectedSubWeb, actualSubweb);
+    }
+
+    @Test
+    public void testSubwebArray() {
+        initializeSmallFoodWeb(web);
+
+        FoodWeb expectedSubWeb = new FoodWeb();
+        expectedSubWeb.addProducerNode(1);
+        expectedSubWeb.addConsumerNode(2);
+        expectedSubWeb.addLink(1, 2);
+
+        int[] subwebNodes = new int[] {1, 2};
         FoodWeb actualSubweb = web.subweb(subwebNodes);
 
         assertEquals(expectedSubWeb, actualSubweb);
