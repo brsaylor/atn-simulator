@@ -38,6 +38,18 @@ public class FoodWebTest {
         assertEquals(3, web.nodeCount());
     }
 
+    @Test
+    public void testLinkCount() {
+        web.addProducerNode(1);
+        web.addConsumerNode(2);
+        web.addConsumerNode(3);
+        web.addLink(1, 2);
+        web.addLink(1, 3);
+        web.addLink(2, 3);
+        web.addLink(3, 3);
+        assertEquals(4, web.linkCount());
+    }
+
     @Test(expected = FoodWebNodeAbsentException.class)
     public void testAddLinkEmpty() {
         web.addLink(1, 2);

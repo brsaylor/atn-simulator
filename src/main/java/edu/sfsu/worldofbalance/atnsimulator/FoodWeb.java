@@ -35,6 +35,13 @@ public class FoodWeb {
         return nodeAttributes.size();
     }
 
+    public int linkCount() {
+        int count = 0;
+        for (Set<Integer> nodeIds : links.values())
+            count += nodeIds.size();
+        return count;
+    }
+
     public Set<Integer> nodes() {
         return nodeAttributes.keySet();
     }
