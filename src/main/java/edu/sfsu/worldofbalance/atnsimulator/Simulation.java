@@ -44,6 +44,8 @@ public class Simulation implements Runnable {
         initializeResultsObject();
         initializeIntegrator();
         if (stopOnSteadyState) {
+            constantDetector = new SimulationConstantSteadyStateDetector(equations);
+            oscillationDetector = new SimulationOscillatingSteadyStateDetector(equations);
             addConstantSteadyStateDetector();
             // Oscillating steady state detector will be added after the simulation runs a while
         }
@@ -80,8 +82,6 @@ public class Simulation implements Runnable {
     }
 
     private void addConstantSteadyStateDetector() {
-        constantDetector = new SimulationConstantSteadyStateDetector(equations);
-
         // TODO: Choose best parameter values
         integrator.addEventHandler(new EventFilter(constantDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS),
                 1,  // maximal time interval between switching function checks (this interval prevents missing sign changes in case the integration steps becomes very large)
@@ -92,7 +92,6 @@ public class Simulation implements Runnable {
     }
 
     private void addOscillatingSteadyStateDetector() {
-        oscillationDetector = new SimulationOscillatingSteadyStateDetector(equations);
         integrator.addEventHandler(oscillationDetector, stepSize, 0.0001, 1000, new BisectionSolver());
     }
 
