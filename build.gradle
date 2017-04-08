@@ -47,6 +47,8 @@ jacocoTestReport {
     }
 }
 
+check.dependsOn jacocoTestReport
+
 run {
     // Allow passing arguments to the program from the command line with:
     // gradle run -Pargs="-my args for the system"
