@@ -32,6 +32,8 @@ public class BatchSimulationTask implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Running simulation " + simulationId);
+
         NodeConfigParser parser = new NodeConfigParser(nodeConfigBiomassScale);
         NodeConfigParser.Result parseResult = parser.parse(nodeConfig);
 

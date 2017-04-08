@@ -9,6 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class BatchSimulator {
 
@@ -41,10 +44,12 @@ public class BatchSimulator {
             return;
         }
 
+        ExecutorService executorService = Executors.newFixedThreadPool(arguments.threads);
+
         readSerengetiFoodWeb();
         int simulationId = 0;
+        System.out.println();
         while (input.hasNextLine()) {
-            System.out.println("Running simulation " + simulationId);
             SimulationParameters parameters = new SimulationParameters();
             parameters.timesteps = arguments.timesteps;
             parameters.stepSize = arguments.stepSize;
@@ -58,15 +63,38 @@ public class BatchSimulator {
                     nodeConfig,
                     arguments.nodeConfigBiomassScale,
                     arguments.outputDirectory);
-            task.run();
+
+            executorService.execute(task);
+
             simulationId++;
         }
+
+        shutdownAndAwaitTermination(executorService);
     }
 
     private static void readSerengetiFoodWeb() {
         Reader reader = new InputStreamReader(
                 BatchSimulator.class.getResourceAsStream("/foodwebs/serengeti.json"));
         serengeti = FoodWeb.createFromJson(reader);
+    }
+
+    // From Java 8 API documentation for ExecutorService
+    private static void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!pool.awaitTermination(1, TimeUnit.HOURS)) {
+                pool.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            pool.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
     }
 
     private static class CommandLineArguments {
@@ -77,7 +105,7 @@ public class BatchSimulator {
         private File nodeConfigFile;
 
         @Parameter(names = {"-b", "--node-config-biomass-scale"}, description = "Node config biomass scale")
-        private int nodeConfigBiomassScale = 1000;
+        private Integer nodeConfigBiomassScale = 1000;
 
         @Parameter(names = {"-t", "--timesteps"}, description = "Time steps to run simulations", required = true)
         private Integer timesteps;
@@ -90,6 +118,8 @@ public class BatchSimulator {
 
         @Parameter(names = {"-c", "--no-stop-on-steady-state"}, description = "Do not stop when a steady state is detected")
         private boolean noStopOnSteadyState = false;
+
+        @Parameter(names = {"-T", "--threads"}, description = "Number of simulation threads")
+        private Integer threads = 4;
     }
 }
-
