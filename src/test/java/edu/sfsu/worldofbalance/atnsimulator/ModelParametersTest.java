@@ -42,4 +42,19 @@ public class ModelParametersTest {
         for (double[] row : parameters.assimilationEfficiency)
             assertArrayEquals(new double[] {p, a, a}, row, 1e-20);
     }
+
+    @Test
+    public void applyFoodWebDependentDefaults() {
+        FoodWeb web = new FoodWeb();
+        web.addProducerNode(0);
+        web.addConsumerNode(1);
+        ModelParameters parameters = new ModelParameters(2);
+
+        parameters.applyFoodWebDependentDefaults(web);
+
+        double p = ModelParameters.Defaults.assimilationEfficiencyPlant;
+        double a = ModelParameters.Defaults.assimilationEfficiencyAnimal;
+        for (double[] row : parameters.assimilationEfficiency)
+            assertArrayEquals(new double[] {p, a}, row, 1e-20);
+    }
 }

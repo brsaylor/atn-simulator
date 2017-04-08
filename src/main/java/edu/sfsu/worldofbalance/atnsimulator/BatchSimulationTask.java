@@ -37,6 +37,7 @@ public class BatchSimulationTask implements Runnable {
 
         FoodWeb subweb = fullFoodWeb.subweb(parseResult.nodeIds);
         FoodWeb normalizedSubweb = subweb.normalizedCopy(parseResult.nodeIds);
+        parseResult.parameters.applyFoodWebDependentDefaults(normalizedSubweb);
 
         ModelEquations equations = new ModelEquations(normalizedSubweb, parseResult.parameters);
         Simulation simulation = new Simulation(simulationParameters, equations, parseResult.initialBiomass);

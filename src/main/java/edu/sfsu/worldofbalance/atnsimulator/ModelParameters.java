@@ -30,6 +30,7 @@ public class ModelParameters {
     public double[][] assimilationEfficiency;         // e: Assimilation efficiency
 
     /**
+     * Instantiate with default values, except food-web-dependent defaults
      * @param N number of nodes
      */
     public ModelParameters(int N) {
@@ -48,13 +49,24 @@ public class ModelParameters {
         assimilationEfficiency = matrix(N, Defaults.assimilationEfficiency);
     }
 
+    /**
+     * Instantiate with default values, including food-web-dependent defaults
+     */
     public ModelParameters(FoodWeb foodWeb) {
         this(foodWeb.nodeCount());
+        applyFoodWebDependentDefaults(foodWeb);
+    }
 
+    /**
+     * Set parameter values to defaults
+     * for parameters that depend on the food web structure.
+     * Currently, this only sets assimilation efficiency,
+     * which depends on whether the prey node is a plant or animal.
+     */
+    public void applyFoodWebDependentDefaults(FoodWeb foodWeb) {
         if (!foodWeb.nodeIdsAreNormalized())
             throw new FoodWebNotNormalizedException();
 
-        // Assimilation efficiency default depends on whether prey is plant or animal
         for (int nodeId : foodWeb.nodes()) {
             switch (foodWeb.getNodeAttributes(nodeId).nodeType) {
                 case PRODUCER:
