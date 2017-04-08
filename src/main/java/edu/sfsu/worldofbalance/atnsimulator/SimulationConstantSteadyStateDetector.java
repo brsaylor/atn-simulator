@@ -85,6 +85,7 @@ public class SimulationConstantSteadyStateDetector extends SimulationEventHandle
                 stopEvent = EventType.CONSTANT_BIOMASS_PRODUCERS_ONLY;
             }
         } else {
+            // FIXME: This happens very occasionally, but probably shouldn't
             stopEvent = EventType.UNKNOWN_EVENT;
         }
         return Action.STOP;
