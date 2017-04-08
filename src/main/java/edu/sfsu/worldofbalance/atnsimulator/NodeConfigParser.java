@@ -47,8 +47,8 @@ public class NodeConfigParser {
      */
     public NodeConfigParser(int biomassScale) {
         this.biomassScale = biomassScale;
-        bracketedIntegerPattern = Pattern.compile("^\\[(\\d+)\\]$");               // e.g. [2]
-        parameterAssignmentPattern = Pattern.compile("^([A-Z])=(\\d*\\.?\\d*)$");  // e.g. X=0.55
+        bracketedIntegerPattern = Pattern.compile("^\\[(\\d+)\\]$");     // e.g. [2]
+        parameterAssignmentPattern = Pattern.compile("^([A-Z])=(.+$)");  // e.g. X=0.55
     }
 
     /**
