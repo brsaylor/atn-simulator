@@ -2,8 +2,11 @@ group 'edu.sfsu.worldofbalance.atnsimulator'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
+
+mainClassName = "edu.sfsu.worldofbalance.atnsimulator.BatchSimulator"
 
 repositories {
     mavenCentral()
@@ -34,4 +37,12 @@ dependencies {
     // and uncomment the following line.
     // compile files('libs/sis-jhdf5-batteries_included.jar')
 
+}
+
+run {
+    // Allow passing arguments to the program from the command line with:
+    // gradle run -Pargs="-my args for the system"
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
 }
