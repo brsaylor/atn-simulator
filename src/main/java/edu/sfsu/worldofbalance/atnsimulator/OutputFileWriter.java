@@ -17,6 +17,11 @@ public class OutputFileWriter {
         this.outputDirectory = outputDirectory;
     }
 
+    /**
+     * Write the given data to an output HDF5 file in `outputFileDirectory`.
+     * The filename depends on data.simulationId.
+     * @param data the data from a completed simulation
+     */
     public void write(OutputFileData data) {
         File outputFile = getOutputFile(data.simulationId);
         IHDF5Writer writer = HDF5Factory.configure(outputFile).writer();

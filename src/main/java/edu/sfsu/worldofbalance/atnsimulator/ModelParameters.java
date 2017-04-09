@@ -6,7 +6,7 @@ import static edu.sfsu.worldofbalance.atnsimulator.NodeAttributes.NodeType.PRODU
 import static edu.sfsu.worldofbalance.atnsimulator.NodeAttributes.NodeType.CONSUMER;
 
 /**
- * Data structure holding a set of parameters to be passed to ModelEquations.
+ * Data structure holding a set of ATN model parameters to be passed to ModelEquations.
  *
  * The link-level parameters are indexed as [predatorId][preyId].
  */

@@ -13,6 +13,10 @@ import org.apache.commons.math3.ode.sampling.StepNormalizerMode;
 
 import java.util.Arrays;
 
+/**
+ * Runs a simulation using a given model. Basic usage consists of
+ * calling run() followed by getResults().
+ */
 public class Simulation implements Runnable {
 
     private int nodeCount;
@@ -28,6 +32,11 @@ public class Simulation implements Runnable {
     private SimulationOscillatingSteadyStateDetector oscillationDetector;
     private SimulationResults results;
 
+    /**
+     * @param simulationParameters the parameters for the simulation
+     * @param equations the parameterized ATN model equations to simulate
+     * @param initialBiomass the biomass at timestep 0
+     */
     public Simulation(SimulationParameters simulationParameters, ModelEquations equations, double[] initialBiomass) {
         if (equations.getDimension() != initialBiomass.length)
             throw new IncorrectParameterDimensionsException();
@@ -40,6 +49,9 @@ public class Simulation implements Runnable {
         this.initialBiomass = initialBiomass;
     }
 
+    /**
+     * Run the simulation and store the results.
+     */
     public void run() {
         initializeResultsObject();
         initializeIntegrator();
@@ -52,6 +64,10 @@ public class Simulation implements Runnable {
         doIntegration();
     }
 
+    /**
+     * Retrieve the results of this simulation after run() has completed.
+     * @return the results of the simulation
+     */
     public SimulationResults getResults() {
         return results;
     }

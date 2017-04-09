@@ -6,6 +6,11 @@ import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents the basic structure and attributes of a food web as a directed
+ * graph. The links are directed from prey node to predator node, representing
+ * the direction of energy flow in a food web.
+ */
 public class FoodWeb {
 
     private HashMap<Integer, HashSet<Integer>> links;
@@ -18,6 +23,31 @@ public class FoodWeb {
         nodeAttributes = new HashMap<>();
     }
 
+    /**
+     * Create a FoodWeb from a JSON representation such as the following example:
+     *
+     *   {
+     *       "nodeAttributes": {
+     *           "1": {
+     *               "nodeType": "PRODUCER"
+     *           },
+     *           "2": {
+     *               "nodeType": "CONSUMER"
+     *           },
+     *           "3": {
+     *               "nodeType": "CONSUMER"
+     *           }
+     *       },
+     *       "links": {
+     *           "1": [2, 3],
+     *           "2": [3]
+     *       }
+     *   }
+     *
+     * @param reader Reader object from which to read the JSON. This could be,
+     *               for example, a FileReader or a StringReader.
+     * @return the new food web
+     */
     public static FoodWeb createFromJson(Reader reader) {
         Gson gson = new Gson();
         FoodWeb web = gson.fromJson(reader, FoodWeb.class);
@@ -27,14 +57,23 @@ public class FoodWeb {
         return web;
     }
 
+    /**
+     * @return a JSON representation of the food web
+     */
     public String toJson() {
         return (new Gson()).toJson(this);
     }
 
+    /**
+     * @return the number of nodes in the food web
+     */
     public int nodeCount() {
         return nodeAttributes.size();
     }
 
+    /**
+     * @return the number of links in the food web
+     */
     public int linkCount() {
         int count = 0;
         for (Set<Integer> nodeIds : links.values())
@@ -42,10 +81,18 @@ public class FoodWeb {
         return count;
     }
 
+    /**
+     * @return a set of the node IDs in the food web
+     */
     public Set<Integer> nodes() {
         return nodeAttributes.keySet();
     }
 
+    /**
+     * Add a node to the food web.
+     * @param nodeId ID of new node
+     * @param attributes Attributes of the new node
+     */
     public void addNode(int nodeId, NodeAttributes attributes) {
         if (containsNode(nodeId)) {
             throw new FoodWebDuplicateNodeException(nodeId);
@@ -55,14 +102,23 @@ public class FoodWeb {
         nodeAttributes.put(nodeId, attributes);
     }
 
+    /**
+     * Convenience method to add a node with default producer attributes
+     */
     public void addProducerNode(int nodeId) {
         addNode(nodeId, new NodeAttributes(NodeAttributes.NodeType.PRODUCER));
     }
 
+    /**
+     * Convenience method to add a node with default consumer attributes
+     */
     public void addConsumerNode(int nodeId) {
         addNode(nodeId, new NodeAttributes(NodeAttributes.NodeType.CONSUMER));
     }
 
+    /**
+     * Add a link from the given prey node to the given predator node
+     */
     public void addLink(int preyNodeId, int predatorNodeId) {
         if (!containsNode(preyNodeId)) {
             throw new FoodWebNodeAbsentException(preyNodeId);
@@ -74,14 +130,23 @@ public class FoodWeb {
         reverseLinks.get(predatorNodeId).add(preyNodeId);
     }
 
+    /**
+     * @return true if the food web contains the given node
+     */
     public boolean containsNode(int nodeId) {
         return nodeAttributes.containsKey(nodeId);
     }
 
+    /**
+     * @return true if the food web contains the given link
+     */
     public boolean containsLink(int preyNodeId, int predatorNodeId) {
         return links.containsKey(preyNodeId) && links.get(preyNodeId).contains(predatorNodeId);
     }
 
+    /**
+     * Set the attributes of the given node
+     */
     public void setNodeAttributes(int nodeId, NodeAttributes attributes) {
         if (!containsNode(nodeId)) {
             throw new FoodWebNodeAbsentException(nodeId);
@@ -89,10 +154,16 @@ public class FoodWeb {
         nodeAttributes.put(nodeId, attributes);
     }
 
+    /**
+     * @return the attributes of the given node
+     */
     public NodeAttributes getNodeAttributes(int nodeId) {
         return nodeAttributes.get(nodeId);
     }
 
+    /**
+     * @return the set of node IDs of out-links of the given node
+     */
     public Set<Integer> getPredatorsOf(int preyNodeId) {
         if (!containsNode(preyNodeId)) {
             throw new FoodWebNodeAbsentException(preyNodeId);
@@ -100,6 +171,9 @@ public class FoodWeb {
         return links.get(preyNodeId);
     }
 
+    /**
+     * @return the set of node IDs of in-links of the given node
+     */
     public Set<Integer> getPreyOf(int predatorNodeId) {
         if (!containsNode(predatorNodeId)) {
             throw new FoodWebNodeAbsentException(predatorNodeId);
@@ -123,6 +197,9 @@ public class FoodWeb {
         return subweb;
     }
 
+    /**
+     * @see #subweb(Set)
+     */
     public FoodWeb subweb(int[] nodeIds) {
         Set<Integer> nodeIdSet = new HashSet<>();
         for (int nodeId : nodeIds)
@@ -161,10 +238,18 @@ public class FoodWeb {
         return newWeb;
     }
 
+    /**
+     * @return true if node IDs count contiguously from 0 to N-1
+     */
     public boolean nodeIdsAreNormalized() {
         return Collections.min(nodes()) == 0 && Collections.max(nodes()) == nodeCount() - 1;
     }
 
+    /**
+     * Compare two FoodWeb objects
+     * @param other the other FoodWeb
+     * @return true if the two food webs have the same nodes, links, and attributes
+     */
     public boolean equals(Object other) {
         FoodWeb otherWeb = (FoodWeb) other;
         return otherWeb.nodeAttributes.equals(this.nodeAttributes)

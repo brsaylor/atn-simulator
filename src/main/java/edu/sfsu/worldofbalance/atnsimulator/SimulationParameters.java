@@ -5,7 +5,7 @@ package edu.sfsu.worldofbalance.atnsimulator;
  * as distinct from the parameters of the model equations.
  */
 public class SimulationParameters {
-    public int timesteps;
-    public double stepSize;
-    public boolean stopOnSteadyState;
+    public int timesteps;              // Number of timesteps to simulate
+    public double stepSize;            // Time increment per timestep
+    public boolean stopOnSteadyState;  // Stop simulation when a steady state is detected
 }

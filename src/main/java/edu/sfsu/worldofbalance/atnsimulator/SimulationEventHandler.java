@@ -2,6 +2,9 @@ package edu.sfsu.worldofbalance.atnsimulator;
 
 import org.apache.commons.math3.ode.events.EventHandler;
 
+/**
+ * Base class for steady state event detectors
+ */
 public abstract class SimulationEventHandler implements EventHandler {
     public enum EventType {
         NONE,

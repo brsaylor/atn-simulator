@@ -1,5 +1,9 @@
 package edu.sfsu.worldofbalance.atnsimulator;
 
+/**
+ * Attributes of a node in a food web, as distinct from the node-level ATN model
+ * parameters.
+ */
 public class NodeAttributes {
     public enum NodeType {
         PRODUCER,
