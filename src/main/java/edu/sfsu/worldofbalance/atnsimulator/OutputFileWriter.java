@@ -62,6 +62,7 @@ public class OutputFileWriter {
         }
         writer.writeFloatMatrix("/biomass", floatBiomass);
 
+        writer.writeIntArray("/extinction_timesteps", data.simulationResults.extinctionTimesteps);
         writer.writeString("/stop_event", data.simulationResults.stopEvent.toString());
         writer.writeString("/node_config", data.nodeConfig);
         writer.writeDouble("/node_config_biomass_scale", data.nodeConfigBiomassScale);

@@ -43,6 +43,7 @@ public class OutputFileWriterTest {
                 results.biomass[t][i]  = t * 100 + i;
             }
         }
+        results.extinctionTimesteps = new int[] {-1, 1};
         results.stopEvent = SimulationEventHandler.EventType.OSCILLATING_STEADY_STATE;
         results.timestepsSimulated = timesteps;
 
@@ -66,6 +67,7 @@ public class OutputFileWriterTest {
 
         assertEquals(web.toJson(), reader.readString("/food_web_json"));
         assertMatrixEquals(results.biomass, reader.readFloatMatrix("/biomass"));
+        assertArrayEquals(results.extinctionTimesteps, reader.readIntArray("/extinction_timesteps"));
         assertArrayEquals(nodeIds, reader.readIntArray("/node_ids"));
         assertEquals(data.nodeConfig, reader.readString("/node_config"));
         assertEquals(data.nodeConfigBiomassScale, reader.readDouble("/node_config_biomass_scale"));

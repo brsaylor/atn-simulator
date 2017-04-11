@@ -2,6 +2,8 @@ package edu.sfsu.worldofbalance.atnsimulator;
 
 import org.apache.commons.math3.ode.sampling.FixedStepHandler;
 
+import java.util.Arrays;
+
 /**
  * Fixed step handler for integrating ModelEquations.
  * Copies the integrator output into the biomass output array at a fixed time step.
@@ -10,6 +12,7 @@ public class SimulationStepHandler implements FixedStepHandler {
     private int timestep;            // Current time step
     private double[][] outputArray;  // Biomass output array
     private double stepSize;        // Step size
+    private int[] extinctionTimesteps;
 
     /**
      * Constructor.
@@ -20,6 +23,8 @@ public class SimulationStepHandler implements FixedStepHandler {
         timestep = -1;
         this.outputArray = outputArray;
         this.stepSize = stepSize;
+        this.extinctionTimesteps = new int[outputArray[0].length];
+        Arrays.fill(extinctionTimesteps, -1);
     }
 
     @Override
@@ -33,11 +38,22 @@ public class SimulationStepHandler implements FixedStepHandler {
         if (timestep < outputArray.length) {
             System.arraycopy(y, 0, outputArray[timestep], 0, outputArray[timestep].length);
         }
+
+        // Record any extinctions that occurred this timestep
+        for (int i = 0; i < y.length; i++)
+            if (extinctionTimesteps[i] == -1 && y[i] < ModelEquations.EXTINCT)
+                extinctionTimesteps[i] = timestep;
     }
 
     /**
-     * Get the last time step for which handleStep() was called.
-     * @return the last handled time step
+     * @return the timesteps at which each node went extinct (-1 for no extinction)
+     */
+    public int[] getExtinctionTimesteps() {
+        return extinctionTimesteps;
+    }
+
+    /**
+     * @return the last time step for which handleStep() was called.
      */
     public int getLastHandledTimestep() {
         return timestep;

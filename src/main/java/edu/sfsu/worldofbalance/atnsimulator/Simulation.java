@@ -76,6 +76,7 @@ public class Simulation implements Runnable {
         results = new SimulationResults(timesteps, initialBiomass.length);
         results.simulationParameters = simulationParameters;
         results.modelParameters = equations.getParameters();
+        Arrays.fill(results.extinctionTimesteps, -1);
         results.stopEvent = SimulationEventHandler.EventType.NONE;
     }
 
@@ -166,5 +167,6 @@ public class Simulation implements Runnable {
             results.stopEvent = SimulationEventHandler.EventType.NONE;
         }
         results.timestepsSimulated = Math.min(results.timestepsSimulated, results.biomass.length);
+        results.extinctionTimesteps = stepHandler.getExtinctionTimesteps();
     }
 }
