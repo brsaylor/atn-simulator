@@ -1,6 +1,9 @@
 package edu.sfsu.worldofbalance.atnsimulator;
 
 import org.junit.Test;
+
+import javax.jws.WebParam;
+
 import static org.junit.Assert.*;
 
 // TODO: More comprehensive tests
@@ -148,6 +151,23 @@ public class SimulationTest {
 
         // Consumer goes extinct
         assertEquals(consumerExtinctionTimestep, results.extinctionTimesteps[1]);
+    }
+
+    @Test
+    public void testNoRecordBiomass() {
+        FoodWeb web = new FoodWeb();
+        web.addProducerNode(0);
+        ModelParameters mp = new ModelParameters(web);
+        ModelEquations equations = new ModelEquations(web, mp);
+        SimulationParameters sp = new SimulationParameters();
+        sp.timesteps = 10;
+        sp.stepSize = 0.1;
+        sp.stopOnSteadyState = false;
+        sp.recordBiomass = false;
+        Simulation sim = new Simulation(sp, equations, new double[] {1});
+        sim.run();
+        SimulationResults results = sim.getResults();
+        assertNull(results.biomass);
     }
 
     private boolean biomassIsIncreasing(double[][] biomass, int nodeId) {

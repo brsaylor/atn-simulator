@@ -53,7 +53,7 @@ public class Simulation implements Runnable {
      * Run the simulation and store the results.
      */
     public void run() {
-        initializeResultsObject();
+        results = new SimulationResults(simulationParameters, equations.getParameters());
         initializeIntegrator();
         if (stopOnSteadyState) {
             constantDetector = new SimulationConstantSteadyStateDetector(equations);
@@ -70,14 +70,6 @@ public class Simulation implements Runnable {
      */
     public SimulationResults getResults() {
         return results;
-    }
-
-    private void initializeResultsObject() {
-        results = new SimulationResults(timesteps, initialBiomass.length);
-        results.simulationParameters = simulationParameters;
-        results.modelParameters = equations.getParameters();
-        Arrays.fill(results.extinctionTimesteps, -1);
-        results.stopEvent = SimulationEventHandler.EventType.NONE;
     }
 
     private void initializeIntegrator() {
@@ -115,7 +107,8 @@ public class Simulation implements Runnable {
     private void doIntegration() {
 
         // Initialize biomass data for timestep 0
-        System.arraycopy(initialBiomass, 0, results.biomass[0], 0, initialBiomass.length);
+        if (simulationParameters.recordBiomass)
+            System.arraycopy(initialBiomass, 0, results.biomass[0], 0, initialBiomass.length);
         double[] currentBiomass = Arrays.copyOf(initialBiomass, initialBiomass.length);
 
         // Run the integrator to compute the biomass time series.
@@ -140,7 +133,7 @@ public class Simulation implements Runnable {
             try {
                 integrator.integrate(equations,
                         startTimestep * stepSize,
-                        results.biomass[startTimestep],
+                        currentBiomass,
                         endTimestep * stepSize,
                         currentBiomass);
             } catch (NoBracketingException e) {
@@ -166,7 +159,8 @@ public class Simulation implements Runnable {
             results.timestepsSimulated = timesteps;
             results.stopEvent = SimulationEventHandler.EventType.NONE;
         }
-        results.timestepsSimulated = Math.min(results.timestepsSimulated, results.biomass.length);
+        if (simulationParameters.recordBiomass)
+            results.timestepsSimulated = Math.min(results.timestepsSimulated, results.biomass.length);
         results.extinctionTimesteps = stepHandler.getExtinctionTimesteps();
     }
 }

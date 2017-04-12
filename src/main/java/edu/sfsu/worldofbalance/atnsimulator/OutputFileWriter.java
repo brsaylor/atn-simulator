@@ -50,7 +50,22 @@ public class OutputFileWriter {
         writer.writeDoubleMatrix("/parameters/link/half_saturation_density", p.halfSaturationDensity);
         writer.writeDoubleMatrix("/parameters/link/assimilation_efficiency", p.assimilationEfficiency);
 
-        // Biomass data (32-bit floats to save space)
+        if (data.simulationResults.simulationParameters.recordBiomass) {
+            writeBiomass(data, writer);
+        }
+
+        writer.writeIntArray("/extinction_timesteps", data.simulationResults.extinctionTimesteps);
+        writer.writeString("/stop_event", data.simulationResults.stopEvent.toString());
+        writer.writeString("/node_config", data.nodeConfig);
+        writer.writeDouble("/node_config_biomass_scale", data.nodeConfigBiomassScale);
+        writer.writeIntArray("/node_ids", data.originalNodeIds);
+        writer.writeString("/food_web_json", data.originalSubweb.toJson());
+
+        writer.close();
+    }
+
+    private void writeBiomass(OutputFileData data, IHDF5Writer writer) {
+        // Convert to 32-bit float to save space
         double[][] doubleBiomass = data.simulationResults.biomass;
         int nodeCount = doubleBiomass[0].length;
         int timesteps = data.simulationResults.timestepsSimulated;
@@ -61,15 +76,6 @@ public class OutputFileWriter {
             }
         }
         writer.writeFloatMatrix("/biomass", floatBiomass);
-
-        writer.writeIntArray("/extinction_timesteps", data.simulationResults.extinctionTimesteps);
-        writer.writeString("/stop_event", data.simulationResults.stopEvent.toString());
-        writer.writeString("/node_config", data.nodeConfig);
-        writer.writeDouble("/node_config_biomass_scale", data.nodeConfigBiomassScale);
-        writer.writeIntArray("/node_ids", data.originalNodeIds);
-        writer.writeString("/food_web_json", data.originalSubweb.toJson());
-
-        writer.close();
     }
 
     private File getOutputFile(int simulationId) {

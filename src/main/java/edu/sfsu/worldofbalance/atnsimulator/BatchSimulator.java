@@ -54,6 +54,7 @@ public class BatchSimulator {
             parameters.timesteps = arguments.timesteps;
             parameters.stepSize = arguments.stepSize;
             parameters.stopOnSteadyState = !arguments.noStopOnSteadyState;
+            parameters.recordBiomass = !arguments.noRecordBiomass;
             String nodeConfig = input.nextLine();
 
             BatchSimulationTask task = new BatchSimulationTask(
@@ -118,6 +119,9 @@ public class BatchSimulator {
 
         @Parameter(names = {"-c", "--no-stop-on-steady-state"}, description = "Do not stop when a steady state is detected")
         private boolean noStopOnSteadyState = false;
+
+        @Parameter(names = {"-r", "--no-record-biomass"}, description = "Do not record biomass data")
+        private boolean noRecordBiomass = false;
 
         @Parameter(names = {"-T", "--threads"}, description = "Number of simulation threads")
         private Integer threads = 4;

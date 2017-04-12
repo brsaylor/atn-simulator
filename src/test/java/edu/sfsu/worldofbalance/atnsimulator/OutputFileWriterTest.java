@@ -35,7 +35,7 @@ public class OutputFileWriterTest {
         simulationParameters.stopOnSteadyState = true;
         ModelParameters modelParameters = new ModelParameters(web);
 
-        SimulationResults results = new SimulationResults(timesteps, nodeCount);
+        SimulationResults results = new SimulationResults(simulationParameters, modelParameters);
         results.simulationParameters = simulationParameters;
         results.modelParameters = modelParameters;
         for (int t = 0; t < timesteps; t++) {
@@ -108,6 +108,43 @@ public class OutputFileWriterTest {
                 reader.readDoubleMatrix("/parameters/link/assimilation_efficiency"));
 
         reader.close();
+    }
+
+    @Test
+    public void testWriteWithoutBiomassData() throws IOException {
+
+        File outputDirectory = tempFolder.newFolder("output");
+
+        int timesteps = 10;
+        int nodeCount = 2;
+
+        FoodWeb web = new FoodWeb();
+        web.addProducerNode(0);
+
+        SimulationParameters simulationParameters = new SimulationParameters();
+        simulationParameters.timesteps = timesteps;
+        simulationParameters.stepSize = 0.1;
+        simulationParameters.stopOnSteadyState = true;
+        simulationParameters.recordBiomass = false;
+        ModelParameters modelParameters = new ModelParameters(web);
+
+        SimulationResults results = new SimulationResults(simulationParameters, modelParameters);
+
+        OutputFileWriter writer = new OutputFileWriter(outputDirectory);
+        int simulationId = 1;
+        int[] nodeIds = new int[] {0, 1};
+
+        OutputFileData data = new OutputFileData();
+        data.simulationId = simulationId;
+        data.simulationResults = results;
+        data.nodeConfig = "placeholder";
+        data.nodeConfigBiomassScale = 1000;
+        data.originalNodeIds = nodeIds;
+        data.originalSubweb = web;
+        writer.write(data);
+
+        File outputFile = new File(outputDirectory, "ATN_1.h5");
+        assertTrue(outputFile.exists());
     }
 
     private void assertMatrixEquals(double[][] expected, float[][] actual) {
