@@ -82,7 +82,7 @@ public class Simulation implements Runnable {
         // Set up the StepHandler, which is triggered at each time step by the integrator,
         // and copies the current biomass of each species into calcBiomass[timestep].
         // See the "Continuous Output" section of https://commons.apache.org/proper/commons-math/userguide/ode.html
-        stepHandler = new SimulationStepHandler(results.biomass, stepSize);
+        stepHandler = new SimulationStepHandler(nodeCount, results.biomass, stepSize);
         StepHandler stepNormalizer = new StepNormalizer(
                 stepSize, stepHandler,
                 StepNormalizerMode.MULTIPLES,  // step at multiples of stepSize
@@ -161,7 +161,20 @@ public class Simulation implements Runnable {
         }
         if (simulationParameters.recordBiomass)
             results.timestepsSimulated = Math.min(results.timestepsSimulated, results.biomass.length);
-        results.extinctionTimesteps = stepHandler.getExtinctionTimesteps();
+        results.extinctionTimesteps = getExtinctionTimesteps(currentBiomass, results.timestepsSimulated - 1);
         System.arraycopy(currentBiomass, 0, results.finalBiomass, 0, nodeCount);
+    }
+
+    private int[] getExtinctionTimesteps(double[] finalBiomass, int finalTimestep) {
+        int[] extinctionTimesteps = stepHandler.getExtinctionTimesteps();
+
+        // If the simulation stops between timesteps when a node goes extinct,
+        // that extinction won't be reported by the step handler.
+        // Do a pass through the final biomass to get any final extinctions,
+        // using a slightly higher extinction threshold to be sure to catch them.
+        for (int i = 0; i < finalBiomass.length; i++)
+            if (extinctionTimesteps[i] == -1 && finalBiomass[i] < ModelEquations.EXTINCT * 1.5)
+                extinctionTimesteps[i] = finalTimestep;
+        return extinctionTimesteps;
     }
 }

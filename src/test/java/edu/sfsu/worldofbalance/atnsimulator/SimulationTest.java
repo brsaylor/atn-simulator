@@ -119,9 +119,11 @@ public class SimulationTest {
         FoodWeb web = new FoodWeb();
         web.addProducerNode(0);
         web.addConsumerNode(1);
+        web.addConsumerNode(2);
 
         ModelParameters parameters = new ModelParameters(web);
-        parameters.metabolicRate[1] = 100;
+        parameters.metabolicRate[1] = 200;  // Make producer 1 go extinct first
+        parameters.metabolicRate[2] = 100;  // Make producer 2 go extinct second
 
         // Absence of link and high metabolic rate will make the consumer go extinct quickly
 
@@ -132,25 +134,28 @@ public class SimulationTest {
         simParams.timesteps = 10;
         simParams.stopOnSteadyState = false;
 
-        double[] initialBiomass = {1, 1};
+        double[] initialBiomass = {1, 1, 1};
         Simulation simulation = new Simulation(simParams, equations, initialBiomass);
         simulation.run();
         SimulationResults results = simulation.getResults();
 
-        // Producer doesn't go extinct
         assertEquals(-1, results.extinctionTimesteps[0]);
 
-        int consumerExtinctionTimestep = -1;
-        for (int t = 0; t < simParams.timesteps; t++) {
-            if (results.biomass[t][1] < ModelEquations.EXTINCT) {
-                consumerExtinctionTimestep = t;
-                break;
+        // Consumer shouldn't go extinct; leave at -1.
+        // Producer 1 should go extinct, then producer 2 should go extinct.
+        int[] expectedExtinctionTimesteps = new int[] {-1, -1, -1};
+        for (int consumer = 1; consumer < 3; consumer++) {
+            for (int t = 0; t < simParams.timesteps; t++) {
+                if (results.biomass[t][consumer] < ModelEquations.EXTINCT) {
+                    expectedExtinctionTimesteps[consumer] = t;
+                    break;
+                }
             }
         }
-        assertTrue(consumerExtinctionTimestep > -1);
 
-        // Consumer goes extinct
-        assertEquals(consumerExtinctionTimestep, results.extinctionTimesteps[1]);
+        assertTrue(expectedExtinctionTimesteps[1] != -1 && expectedExtinctionTimesteps[2] != -1);
+        assertTrue(expectedExtinctionTimesteps[1] < expectedExtinctionTimesteps[2]);
+        assertArrayEquals(expectedExtinctionTimesteps, results.extinctionTimesteps);
     }
 
     @Test
