@@ -70,6 +70,7 @@ public class OutputFileWriterTest {
         assertMatrixEquals(results.biomass, reader.readFloatMatrix("/biomass"));
         assertArrayEquals(results.finalBiomass, reader.readDoubleArray("/final_biomass"), 1e-20);
         assertArrayEquals(results.extinctionTimesteps, reader.readIntArray("/extinction_timesteps"));
+        assertEquals(results.timestepsSimulated, reader.readInt("/timesteps_simulated"));
         assertArrayEquals(nodeIds, reader.readIntArray("/node_ids"));
         assertEquals(data.nodeConfig, reader.readString("/node_config"));
         assertEquals(data.nodeConfigBiomassScale, reader.readDouble("/node_config_biomass_scale"));
