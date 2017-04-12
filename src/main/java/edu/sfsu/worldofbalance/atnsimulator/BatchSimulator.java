@@ -44,6 +44,9 @@ public class BatchSimulator {
             return;
         }
 
+        if (!arguments.outputDirectory.exists())
+            arguments.outputDirectory.mkdirs();
+
         ExecutorService executorService = Executors.newFixedThreadPool(arguments.threads);
 
         readSerengetiFoodWeb();
