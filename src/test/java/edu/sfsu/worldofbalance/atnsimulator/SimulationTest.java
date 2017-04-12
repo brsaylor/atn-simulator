@@ -170,6 +170,24 @@ public class SimulationTest {
         assertNull(results.biomass);
     }
 
+    @Test
+    public void testFinalBiomass() {
+        FoodWeb web = new FoodWeb();
+        web.addProducerNode(0);
+        ModelParameters mp = new ModelParameters(web);
+        ModelEquations equations = new ModelEquations(web, mp);
+        SimulationParameters sp = new SimulationParameters();
+        sp.timesteps = 10;
+        sp.stepSize = 0.1;
+        sp.stopOnSteadyState = false;
+        sp.recordBiomass = false;
+        double[] initialBiomass = new double[] {0.5};
+        Simulation sim = new Simulation(sp, equations, initialBiomass);
+        sim.run();
+        SimulationResults results = sim.getResults();
+        assertTrue(results.finalBiomass[0] > initialBiomass[0]);
+    }
+
     private boolean biomassIsIncreasing(double[][] biomass, int nodeId) {
         for (int t = 1; t < biomass.length; t++)
             if (biomass[t-1][nodeId] >= biomass[t][nodeId])

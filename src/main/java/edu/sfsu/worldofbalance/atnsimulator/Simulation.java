@@ -162,5 +162,6 @@ public class Simulation implements Runnable {
         if (simulationParameters.recordBiomass)
             results.timestepsSimulated = Math.min(results.timestepsSimulated, results.biomass.length);
         results.extinctionTimesteps = stepHandler.getExtinctionTimesteps();
+        System.arraycopy(currentBiomass, 0, results.finalBiomass, 0, nodeCount);
     }
 }

@@ -16,6 +16,7 @@ public class SimulationResults {
     public int[] extinctionTimesteps;
 
     public SimulationEventHandler.EventType stopEvent;
+    public double[] finalBiomass;
     public int timestepsSimulated;
 
     public SimulationResults(SimulationParameters sp, ModelParameters mp) {
@@ -29,6 +30,7 @@ public class SimulationResults {
         extinctionTimesteps = new int[nodeCount];
         Arrays.fill(extinctionTimesteps, -1);
         stopEvent = SimulationEventHandler.EventType.NONE;
+        finalBiomass = new double[nodeCount];
         timestepsSimulated = 0;
     }
 }

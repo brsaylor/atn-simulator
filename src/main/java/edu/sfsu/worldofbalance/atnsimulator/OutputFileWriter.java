@@ -54,6 +54,7 @@ public class OutputFileWriter {
             writeBiomass(data, writer);
         }
 
+        writer.writeDoubleArray("/final_biomass", data.simulationResults.finalBiomass);
         writer.writeIntArray("/extinction_timesteps", data.simulationResults.extinctionTimesteps);
         writer.writeString("/stop_event", data.simulationResults.stopEvent.toString());
         writer.writeString("/node_config", data.nodeConfig);
