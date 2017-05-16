@@ -99,20 +99,20 @@ public class ModelParameters {
         public static double assimilationEfficiencyAnimal = 0.8;
     }
 
-    private double[] vector(int size, double value) {
+    private static double[] vector(int size, double value) {
         double[] array = new double[size];
         Arrays.fill(array, value);
         return array;
     }
 
-    private double[][] matrix(int size, double value) {
+    private static double[][] matrix(int size, double value) {
         double[][] matrix = new double[size][size];
         for (double[] row : matrix)
             Arrays.fill(row, value);
         return matrix;
     }
 
-    private void fillColumn(double[][] matrix, int column, double value) {
+    private static void fillColumn(double[][] matrix, int column, double value) {
         for (int row = 0; row < matrix.length; row++)
             matrix[row][column]  = value;
     }
