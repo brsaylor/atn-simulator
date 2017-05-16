@@ -79,6 +79,15 @@ public class ModelParameters {
         }
     }
 
+    /**
+     * Set systemCarryingCapacity to the sum of node-level carryingCapacity
+     */
+    public void calculateSystemCarryingCapacity() {
+        systemCarryingCapacity = 0;
+        for (double ki : carryingCapacity)
+            systemCarryingCapacity += ki;
+    }
+
     public static class Defaults {
         public static boolean useSystemCarryingCapacity = false;
         public static double systemCarryingCapacity = 1;
